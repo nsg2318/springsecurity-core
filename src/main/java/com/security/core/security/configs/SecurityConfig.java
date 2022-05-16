@@ -1,5 +1,7 @@
-package com.security.core.security;
+package com.security.core.security.configs;
 
+import com.security.core.security.service.CustomUserDetailsService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -15,21 +17,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Slf4j
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    private final CustomUserDetailsService customUserDetailsService;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-
-        String password = passwordEncoder().encode("1111");
-
-        auth.inMemoryAuthentication().withUser("user").password(password).roles("USER");
-        auth.inMemoryAuthentication().withUser("manager").password(password).roles("MANAGER", "USER");
-        auth.inMemoryAuthentication().withUser("admin").password(password).roles("ADMIN");
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        auth.userDetailsService(customUserDetailsService);
     }
 
     @Override
@@ -51,12 +46,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
 
             .formLogin()
-//                .loginPage("/login")
-//                .defaultSuccessUrl("/index")
-//                .loginProcessingUrl("/login_proc")
-//                .usernameParameter("username")
-//                .passwordParameter("password")
-//                .permitAll()
         ;
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 }
