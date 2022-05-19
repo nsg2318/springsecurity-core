@@ -1,5 +1,6 @@
 package com.security.core.controller.login;
 
+import com.security.core.domain.Member;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -21,7 +22,7 @@ public class LoginController {
         Model model) {
 
         model.addAttribute("error", error);
-        model.addAttribute("exception",exception);
+        model.addAttribute("exception", exception);
 
         return "/login";
     }
@@ -31,11 +32,21 @@ public class LoginController {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if(authentication != null){
-            new SecurityContextLogoutHandler().logout(request,response,authentication);
+        if (authentication != null) {
+            new SecurityContextLogoutHandler().logout(request, response, authentication);
         }
 
         return "redirect:/login";
 
+    }
+
+    @GetMapping("/denied")
+    public String accessDenied(@RequestParam(value = "exception", required = false) String exception, Model model) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Member principal = (Member) authentication.getPrincipal();
+        model.addAttribute("username", principal.getUsername());
+        model.addAttribute("exception", exception);
+        return "user/login/denied";
     }
 }

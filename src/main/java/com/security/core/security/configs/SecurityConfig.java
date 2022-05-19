@@ -1,5 +1,6 @@
 package com.security.core.security.configs;
 
+import com.security.core.security.handler.CustomAccessDeniedHandler;
 import com.security.core.security.provider.CustomAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
@@ -31,11 +33,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final AuthenticationFailureHandler customAuthenticationFailureHandler;
 
     /**
-     * 왜 생성자 주입 안 받고 Bean으로 하는지
+     * 왜 Bean으로 하는지
      */
     @Bean
-    public AuthenticationProvider authenticationProvider(){
-        return new CustomAuthenticationProvider(userDetailsService,passwordEncoder());
+    public AuthenticationProvider authenticationProvider() {
+        return new CustomAuthenticationProvider(userDetailsService, passwordEncoder());
+    }
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler() {
+        CustomAccessDeniedHandler customAccessDeniedHandler = new CustomAccessDeniedHandler();
+        customAccessDeniedHandler.setErrorPage("/denied");
+        return customAccessDeniedHandler;
     }
 
     @Override
@@ -55,11 +63,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
             .authorizeRequests()
-            .antMatchers("/", "/users","user/login/**","/login*").permitAll()
+            .antMatchers("/", "/users", "user/login/**", "/login*").permitAll()
             .antMatchers("/user").hasRole("USER")
             .antMatchers("/manager").hasRole("MANAGER")
             .anyRequest().authenticated()
-            .and()
+        .and()
+
+            .exceptionHandling()
+            .accessDeniedHandler(accessDeniedHandler())
+
+        .and()
 
             .formLogin()
             .loginPage("/login")
@@ -69,6 +82,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .successHandler(customAuthenticationSuccessHandler)
             .failureHandler(customAuthenticationFailureHandler)
             .permitAll()
+
 
         ;
     }
