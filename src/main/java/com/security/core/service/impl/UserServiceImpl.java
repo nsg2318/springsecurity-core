@@ -17,7 +17,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void createUser(Member member) {
-
+        member.setDefaultRole();
         userRepository.save(member);
     }
 }

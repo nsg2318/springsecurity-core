@@ -1,15 +1,17 @@
 package com.security.core.domain;
 
 import lombok.AccessLevel;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Member {
@@ -23,7 +25,5 @@ public class Member {
     private String age;
     private String role;
 
-    public void setPassword(String encodePassword){
-        this.password = encodePassword;
-    }
+    public void setDefaultRole() {this.role = "USER";}
 }
