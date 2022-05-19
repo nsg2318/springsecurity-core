@@ -1,16 +1,18 @@
 package com.security.core.security.configs;
 
-import com.security.core.security.service.CustomUserDetailsService;
+import com.security.core.security.provider.CustomAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -20,11 +22,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final CustomUserDetailsService customUserDetailsService;
+    private final UserDetailsService userDetailsService;
+    /**
+     * 왜 생성자 주입 안 받고 Bean으로 하는지
+     */
+    @Bean
+    public AuthenticationProvider authenticationProvider(){
+        return new CustomAuthenticationProvider(userDetailsService,passwordEncoder());
+    }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(customUserDetailsService);
+        auth.authenticationProvider(authenticationProvider());
     }
 
     @Override
@@ -46,6 +55,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
 
             .formLogin()
+            .loginPage("/login")
+            .loginProcessingUrl("/login_proc")
+            .defaultSuccessUrl("/")
+            .permitAll()
+
         ;
     }
 
