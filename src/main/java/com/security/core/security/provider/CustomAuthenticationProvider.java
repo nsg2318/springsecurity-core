@@ -1,14 +1,18 @@
 package com.security.core.security.provider;
 
+import com.security.core.security.common.FormWebAuthenticationDetails;
 import com.security.core.security.service.MemberContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import javax.transaction.Transactional;
 
 
 /**
@@ -22,6 +26,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
     // 검증용 메서드 authentication 객체는 AuthenticationManager 로부터 전달받는 클래스
     @Override
+    @Transactional
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         //요청에서 가져온 값
         String username = authentication.getName();
@@ -33,6 +38,12 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         //패스워드 불일치시 인증 실패
         if (!passwordEncoder.matches(password, memberContext.getPassword())) {
             throw new BadCredentialsException("BadCredentialsException");
+        }
+
+        FormWebAuthenticationDetails details = (FormWebAuthenticationDetails) authentication.getDetails();
+        String secretKey = details.getSecretKey();
+        if(!"secrett".equals(secretKey)){
+            throw new InsufficientAuthenticationException("InsufficientAuthenticationException");
         }
 
         //+++ ... 설계 정책에 따라 구성이 달라질 수 있음
