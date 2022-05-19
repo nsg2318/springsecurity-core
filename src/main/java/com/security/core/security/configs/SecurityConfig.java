@@ -16,6 +16,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Slf4j
 @Configuration
@@ -25,6 +26,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
     private final AuthenticationDetailsSource authenticationDetailsSource;
+    private final AuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
     /**
      * 왜 생성자 주입 안 받고 Bean으로 하는지
@@ -62,6 +64,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .loginProcessingUrl("/login_proc")
             .authenticationDetailsSource(authenticationDetailsSource)
             .defaultSuccessUrl("/")
+            .successHandler(customAuthenticationSuccessHandler)
             .permitAll()
 
         ;
