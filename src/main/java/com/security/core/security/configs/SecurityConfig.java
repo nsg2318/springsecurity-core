@@ -47,7 +47,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     /**
-     * 이 애플리케이션에서 AuthenticationProvider는 CustomAuthenticationProvider를 쓴다. 
+     * 이 애플리케이션에서 AuthenticationProvider는 CustomAuthenticationProvider를 쓴다.
      */
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -67,7 +67,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
             .authorizeRequests()
             .antMatchers("/", "/users", "user/login/**", "/login*").permitAll()
-            .antMatchers("/user").hasRole("USER")
+//            .antMatchers("/user").hasRole("USER")
+            .antMatchers("/user").permitAll()
             .antMatchers("/manager").hasRole("MANAGER")
             .anyRequest().authenticated()
         .and()
