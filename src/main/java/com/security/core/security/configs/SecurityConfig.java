@@ -33,7 +33,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final AuthenticationFailureHandler customAuthenticationFailureHandler;
 
     /**
-     * 왜 Bean으로 하는지
+     * 왜 Bean으로 하는지? => 초기화에 파라미터 넣기위해?
      */
     @Bean
     public AuthenticationProvider authenticationProvider() {
@@ -46,6 +46,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return customAccessDeniedHandler;
     }
 
+    /**
+     * 이 애플리케이션에서 AuthenticationProvider는 CustomAuthenticationProvider를 쓴다. 
+     */
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(authenticationProvider());

@@ -5,11 +5,16 @@ import com.security.core.domain.MemberDto;
 import com.security.core.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+
+import javax.servlet.http.HttpSession;
 
 @Controller
 @RequiredArgsConstructor
@@ -19,8 +24,22 @@ public class UserController {
     private final PasswordEncoder passwordEncoder;
 
     @GetMapping("/user")
-    public String userHome() {
+    public String userHome(HttpSession httpSession) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        SecurityContext attribute = (SecurityContext) httpSession.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
+        int a = 1;
         return "user/login/list";
+    }
+
+    @GetMapping("/thread")
+    public void thread() {
+        new Thread(
+
+            () -> {
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            }
+        ).start();
+        int a =2;
     }
 
     @GetMapping("/users")
