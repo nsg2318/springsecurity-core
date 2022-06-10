@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -22,7 +21,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Slf4j
-@Configuration
+//@Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -39,6 +38,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationProvider authenticationProvider() {
         return new CustomAuthenticationProvider(userDetailsService, passwordEncoder());
     }
+
     @Bean
     public AccessDeniedHandler accessDeniedHandler() {
         CustomAccessDeniedHandler customAccessDeniedHandler = new CustomAccessDeniedHandler();
@@ -71,12 +71,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/user").permitAll()
             .antMatchers("/manager").hasRole("MANAGER")
             .anyRequest().authenticated()
-        .and()
+            .and()
 
             .exceptionHandling()
             .accessDeniedHandler(accessDeniedHandler())
 
-        .and()
+            .and()
 
             .formLogin()
             .loginPage("/login")
